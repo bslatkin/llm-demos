@@ -1,5 +1,4 @@
 import sys
-import threading
 
 from gpt4all import GPT4All
 
@@ -7,20 +6,20 @@ from gpt4all import GPT4All
 def do_setup():
     print('Loading...')
     model = GPT4All(
-        'mistral-7b-instruct-v0.1.Q4_0.gguf',
-        # 'nous-hermes-llama2-13b.Q4_0.gguf',
+        # 'mistral-7b-instruct-v0.1.Q4_0.gguf',
+        'orca-2-13b.Q4_0.gguf',
         model_path='./',
         allow_download=False)
 
-    setting = input('Provide the setting for the story: ')
+    setting = input('Provide a setting for a "choose your own adventure" story: ')
 
     print()
 
     system_prompt = f"""\
-You are an adventure text game. Describe each decision point to the player. Output one sentence at each step. Always wait for the player to decide what to do next. Never end the story. Never break character. The setting for the story is: {setting}
-"""
+You are an adventure text game. You will briefly describe each scene to the player. Always let the player to decide what to do next. Never end the story. Never break character. The setting for the story is:
 
-    print(system_prompt)
+{setting}
+"""
 
     return system_prompt, model
 
@@ -32,7 +31,10 @@ def end_turn(token_id, token_string):
     if STOP_GENERATING:
         return False
 
-    return '#' not in token_string
+    if '>' in token_string:
+        return False
+
+    return True
 
 
 def print_response(response_it):
@@ -49,7 +51,7 @@ def do_loop(system_prompt, model):
             prompt_template='{0}'):
 
         response_it = model.generate(
-            prompt='### Game:\n',
+            prompt='> GAME:\n',
             temp=0,
             streaming=True,
             callback=end_turn)
@@ -65,8 +67,8 @@ def do_loop(system_prompt, model):
 
             print()
             response_it = model.generate(
-                prompt=f"### Player's command:\n{prompt}\n\n### Game:\n",
-                temp=0.5,
+                prompt=f"> PLAYER'S COMMAND:\n{prompt}\n\n> GAME:\n",
+                temp=0,
                 streaming=True,
                 callback=end_turn)
             print_response(response_it)
