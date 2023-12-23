@@ -6,7 +6,6 @@ from gpt4all import GPT4All
 def do_setup():
     print('Loading...')
     model = GPT4All(
-        # 'mistral-7b-instruct-v0.1.Q4_0.gguf',
         'orca-2-13b.Q4_0.gguf',
         model_path='./',
         allow_download=False)
