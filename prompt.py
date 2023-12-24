@@ -41,7 +41,7 @@ def do_loop(model):
         temp=0.9,
         top_k=100,
         top_p=0.6,
-        max_tokens=10_000,
+        max_tokens=100_000,
         streaming=True,
         callback=end_turn)
     print_response(response_it)
