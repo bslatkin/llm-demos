@@ -10,14 +10,14 @@ def do_setup():
         model_path='./',
         allow_download=False)
 
-    setting = input('Provide a philosophy for your therapist: ')
+    philosophy = input('Provide a philosophy for your therapist: ')
 
     print()
 
     system_prompt = f"""\
 You are a therapist. You help patients explore their feelings and desires. You acknowledge what patients say and make them feel heard. You ask questions to explore details. You offer advice on what they should do. Your philosophy on therapy is:
 
-{setting}
+{philosophy}
 """
 
     return system_prompt, model
