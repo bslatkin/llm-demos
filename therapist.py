@@ -3,6 +3,13 @@ import sys
 from gpt4all import GPT4All
 
 
+PARAMS = dict(
+    temp=0.9,
+    top_k=100,
+    top_p=0.6,
+)
+
+
 def do_setup():
     print('Loading...')
     model = GPT4All(
@@ -15,9 +22,7 @@ def do_setup():
     print()
 
     system_prompt = f"""\
-You are a therapist. You help patients explore their feelings and desires. You acknowledge what patients say and make them feel heard. You ask questions to explore details. You offer advice on what they should do. Your philosophy on therapy is:
-
-{philosophy}
+You are a therapist. You help patients explore their feelings and desires. You acknowledge what patients say and make them feel heard. You ask questions to explore details. You offer advice on what they should do. Begin by introducing yourself. You will follow this philosophy for therapy: {philosophy}
 """
 
     return system_prompt, model
@@ -51,10 +56,10 @@ def do_loop(system_prompt, model):
 
         response_it = model.generate(
             prompt='> THERAPIST:\n',
-            temp=0.9,
             max_tokens=10_000,
             streaming=True,
-            callback=end_turn)
+            callback=end_turn,
+            **PARAMS)
         print_response(response_it)
 
         while True:
@@ -68,10 +73,10 @@ def do_loop(system_prompt, model):
             print()
             response_it = model.generate(
                 prompt=f"> PATIENT:\n{prompt}\n\n> THERAPIST:\n",
-                temp=0.9,
                 max_tokens=10_000,
                 streaming=True,
-                callback=end_turn)
+                callback=end_turn,
+                **PARAMS)
             print_response(response_it)
 
 

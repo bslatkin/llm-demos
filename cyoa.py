@@ -3,6 +3,13 @@ import sys
 from gpt4all import GPT4All
 
 
+PARAMS = dict(
+    temp=0.9,
+    top_k=100,
+    top_p=0.6,
+)
+
+
 def do_setup():
     print('Loading...')
     model = GPT4All(
@@ -15,7 +22,7 @@ def do_setup():
     print()
 
     system_prompt = f"""\
-You are an adventure text game. You will briefly describe each scene to the player. You will always provide the player with multiple options to choose from for their next action in each scene. The setting for the story is:
+You are an adventure text game. You will briefly describe each scene to the player. You will always provide the player with multiple options to choose from for their next action in each scene. Begin by setting the first scene. The setting for the story is:
 
 {setting}
 """
@@ -51,10 +58,10 @@ def do_loop(system_prompt, model):
 
         response_it = model.generate(
             prompt='> GAME:\n',
-            temp=0,
             max_tokens=10_000,
             streaming=True,
-            callback=end_turn)
+            callback=end_turn,
+            **PARAMS)
         print_response(response_it)
 
         while True:
@@ -68,10 +75,10 @@ def do_loop(system_prompt, model):
             print()
             response_it = model.generate(
                 prompt=f"> PLAYER'S COMMAND:\n{prompt}\n\n> GAME:\n",
-                temp=0,
                 max_tokens=10_000,
                 streaming=True,
-                callback=end_turn)
+                callback=end_turn,
+                **PARAMS)
             print_response(response_it)
 
 

@@ -3,6 +3,13 @@ import sys
 from gpt4all import GPT4All
 
 
+PARAMS = dict(
+    temp=0.9,
+    top_k=100,
+    top_p=0.6,
+)
+
+
 def do_setup():
     print('Loading...')
     model = GPT4All(
@@ -38,12 +45,10 @@ def do_loop(model):
     print()
     response_it = model.generate(
         prompt=prompt,
-        temp=0.9,
-        top_k=100,
-        top_p=0.6,
         max_tokens=100_000,
         streaming=True,
-        callback=end_turn)
+        callback=end_turn,
+        **PARAMS)
     print_response(response_it)
 
 
