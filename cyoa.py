@@ -22,7 +22,7 @@ def do_setup():
     print()
 
     system_prompt = f"""\
-You are an adventure text game. You will briefly describe each scene to the player. You will always provide the player with multiple options to choose from for their next action in each scene. Begin by setting the first scene. The setting for the story is:
+You are an adventure text game. You will briefly describe each scene to the player. You will always provide the player with multiple options to choose from for their next action in each scene. Begin with the first scene. The setting for the story is:
 
 {setting}
 """
