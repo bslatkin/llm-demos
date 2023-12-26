@@ -37,11 +37,28 @@ def print_response(response_it):
     print()
 
 
+def read_until_eof():
+    pending = []
+
+    while True:
+        data = sys.stdin.readline()
+        if not data:
+            break
+        pending.append(data)
+
+    return ''.join(pending)
+
+
 def do_loop(model):
     print('Prompt for LLM (type ^D to finish input):')
-    prompt = sys.stdin.read()
+    prompt = read_until_eof()
     print()
-    print('Response:')
+    print()
+    print('> Received prompt:')
+    print(prompt)
+    print()
+    print()
+    print('> Generated response:')
     print()
     response_it = model.generate(
         prompt=prompt,
