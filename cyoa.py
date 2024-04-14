@@ -57,7 +57,6 @@ def print_response(response_it):
 
 def do_loop(system_prompt, model):
     with model.chat_session(
-            # system_prompt=system_prompt,
             prompt_template='{0}'):
 
         response_it = model.generate(
