@@ -7,13 +7,15 @@ PARAMS = dict(
     temp=0.9,
     top_k=100,
     top_p=0.6,
+    n_batch=64,
+    max_tokens=1_000,
 )
 
 
 def do_setup():
     print('Loading...')
     model = GPT4All(
-        'orca-2-13b.Q4_0.gguf',
+        'mistral-7b-instruct-v0.2.Q5_K_M.gguf',
         model_path='./',
         allow_download=False)
 
@@ -56,7 +58,6 @@ def do_loop(system_prompt, model):
 
         response_it = model.generate(
             prompt='> THERAPIST:\n',
-            max_tokens=10_000,
             streaming=True,
             callback=end_turn,
             **PARAMS)
@@ -73,7 +74,6 @@ def do_loop(system_prompt, model):
             print()
             response_it = model.generate(
                 prompt=f"> PATIENT:\n{prompt}\n\n> THERAPIST:\n",
-                max_tokens=10_000,
                 streaming=True,
                 callback=end_turn,
                 **PARAMS)

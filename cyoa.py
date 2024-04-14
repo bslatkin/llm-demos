@@ -7,13 +7,15 @@ PARAMS = dict(
     temp=0.9,
     top_k=100,
     top_p=0.6,
+    n_batch=64,
+    max_tokens=1_000,
 )
 
 
 def do_setup():
     print('Loading...')
     model = GPT4All(
-        'orca-2-13b.Q4_0.gguf',
+        'mistral-7b-instruct-v0.2.Q5_K_M.gguf',
         model_path='./',
         allow_download=False)
 
@@ -22,9 +24,7 @@ def do_setup():
     print()
 
     system_prompt = f"""\
-You are an adventure text game. You will briefly describe each scene to the player. You will always provide the player with multiple options to choose from for their next action in each scene. Begin with the first scene. The setting for the story is:
-
-{setting}
+You are an adventure text game. You will describe each scene to the player and what they are seeing. You will tell them details about each of the people in the scene, what they look like, how they act, and what they might be thinking privately. You will not make choices for the player or determine anything they do. Instead, you will ask the player to decide what to do next each time. You will not present an explicit list of options but allow the player to make an unstructured choice. The game begins with you describing the first scene. The setting for the story provided by the player is: {setting}
 """
 
     return system_prompt, model
@@ -58,7 +58,6 @@ def do_loop(system_prompt, model):
 
         response_it = model.generate(
             prompt='> GAME:\n',
-            max_tokens=10_000,
             streaming=True,
             callback=end_turn,
             **PARAMS)
@@ -75,7 +74,6 @@ def do_loop(system_prompt, model):
             print()
             response_it = model.generate(
                 prompt=f"> PLAYER'S COMMAND:\n{prompt}\n\n> GAME:\n",
-                max_tokens=10_000,
                 streaming=True,
                 callback=end_turn,
                 **PARAMS)

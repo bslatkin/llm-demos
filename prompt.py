@@ -7,15 +7,18 @@ PARAMS = dict(
     temp=0.9,
     top_k=100,
     top_p=0.6,
+    n_batch=1024,
+    max_tokens=1_000,
 )
 
 
 def do_setup():
     print('Loading...')
     model = GPT4All(
-        'orca-2-13b.Q4_0.gguf',
+        'mistral-7b-instruct-v0.2.Q5_K_M.gguf',
         model_path='./',
-        allow_download=False)
+        allow_download=False,
+        device='gpu')
     return model
 
 
@@ -62,7 +65,6 @@ def do_loop(model):
     print()
     response_it = model.generate(
         prompt=prompt,
-        max_tokens=100_000,
         streaming=True,
         callback=end_turn,
         **PARAMS)
