@@ -17,8 +17,7 @@ def do_setup():
     model = GPT4All(
         'mistral-7b-instruct-v0.2.Q5_K_M.gguf',
         model_path='./',
-        allow_download=False,
-        device='gpu')
+        allow_download=False)
     return model
 
 

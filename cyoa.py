@@ -7,7 +7,7 @@ PARAMS = dict(
     temp=0.9,
     top_k=100,
     top_p=0.6,
-    n_batch=64,
+    n_batch=1024,
     max_tokens=1_000,
 )
 
@@ -24,8 +24,12 @@ def do_setup():
     print()
 
     system_prompt = f"""\
-You are an adventure text game. You will describe each scene to the player and what they are seeing. You will tell them details about each of the people in the scene, what they look like, how they act, and what they might be thinking privately. You will not make choices for the player or determine anything they do. Instead, you will ask the player to decide what to do next each time. You will not present an explicit list of options but allow the player to make an unstructured choice. The game begins with you describing the first scene. The setting for the story provided by the player is: {setting}
-"""
+# INSTRUCTIONS:
+
+You are a text-based game with the following plot: "{setting}"
+
+During the game you will describe each scene to the player and what they are seeing. You will tell them details about each of the people in the scene, what they look like, how they act, and what they might be thinking privately. You will not make choices for the player or determine anything they do. Instead, you will ask the player to decide what to do next each time. You will not present an explicit list of options but allow the player to make an unstructured choice.
+# """
 
     return system_prompt, model
 
@@ -37,7 +41,7 @@ def end_turn(token_id, token_string):
     if STOP_GENERATING:
         return False
 
-    if '>' in token_string:
+    if '#' in token_string:
         return False
 
     return True
@@ -53,11 +57,14 @@ def print_response(response_it):
 
 def do_loop(system_prompt, model):
     with model.chat_session(
-            system_prompt=system_prompt,
+            # system_prompt=system_prompt,
             prompt_template='{0}'):
 
         response_it = model.generate(
-            prompt='> GAME:\n',
+            prompt=(
+                f"{system_prompt}\n\n"
+                "# PLAYER'S COMMAND:\nDescribe the scene\n\n"
+                "# GAME:\n"),
             streaming=True,
             callback=end_turn,
             **PARAMS)
@@ -73,7 +80,7 @@ def do_loop(system_prompt, model):
 
             print()
             response_it = model.generate(
-                prompt=f"> PLAYER'S COMMAND:\n{prompt}\n\n> GAME:\n",
+                prompt=f"# PLAYER'S COMMAND:\n{prompt}\n\n# GAME:\n",
                 streaming=True,
                 callback=end_turn,
                 **PARAMS)

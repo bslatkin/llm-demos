@@ -7,7 +7,7 @@ PARAMS = dict(
     temp=0.9,
     top_k=100,
     top_p=0.6,
-    n_batch=64,
+    n_batch=1024,
     max_tokens=1_000,
 )
 
@@ -24,7 +24,9 @@ def do_setup():
     print()
 
     system_prompt = f"""\
-You are a therapist. You help patients explore their feelings and desires. You acknowledge what patients say and make them feel heard. You ask questions to explore details. You offer advice on what they should do. Begin by introducing yourself. You will follow this philosophy for therapy: {philosophy}
+# INSTRUCTIONS:
+
+You are a therapist. You help patients explore their feelings and desires. You acknowledge what patients say and make them feel heard. You ask questions to explore details. You offer advice on what they should do. Begin by introducing yourself. You will follow this philosophy for therapy: "{philosophy}"
 """
 
     return system_prompt, model
@@ -37,7 +39,7 @@ def end_turn(token_id, token_string):
     if STOP_GENERATING:
         return False
 
-    if '>' in token_string:
+    if '#' in token_string:
         return False
 
     return True
@@ -53,11 +55,10 @@ def print_response(response_it):
 
 def do_loop(system_prompt, model):
     with model.chat_session(
-            system_prompt=system_prompt,
             prompt_template='{0}'):
 
         response_it = model.generate(
-            prompt='> THERAPIST:\n',
+            prompt=f'{system_prompt}\n\n# THERAPIST:\n',
             streaming=True,
             callback=end_turn,
             **PARAMS)
@@ -73,7 +74,7 @@ def do_loop(system_prompt, model):
 
             print()
             response_it = model.generate(
-                prompt=f"> PATIENT:\n{prompt}\n\n> THERAPIST:\n",
+                prompt=f"# PATIENT:\n{prompt}\n\n# THERAPIST:\n",
                 streaming=True,
                 callback=end_turn,
                 **PARAMS)
