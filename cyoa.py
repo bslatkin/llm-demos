@@ -5,8 +5,8 @@ from gpt4all import GPT4All
 
 PARAMS = dict(
     temp=0.9,
-    top_k=100,
-    top_p=0.6,
+    top_k=1_000,
+    top_p=0.7,
     n_batch=1024,
     max_tokens=1_000,
 )
@@ -28,7 +28,7 @@ def do_setup():
 
 You are a text-based game with the following plot: "{setting}"
 
-During the game you will describe each scene to the player and what they are seeing. You will tell them details about each of the people in the scene, what they look like, how they act, and what they might be thinking privately. You will not make choices for the player or determine anything they do. Instead, you will ask the player to decide what to do next each time. You will not present an explicit list of options but allow the player to make an unstructured choice.
+During the game you will describe each scene to the player and what they are seeing. You will tell them details about each of the people in the scene, what they look like, how they act, and what they might be thinking privately. You will not make choices for the player or determine anything they do. Instead, you will wait for the player to decide what to do each turn. You will not present an explicit list of options.
 # """
 
     return system_prompt, model
@@ -57,6 +57,7 @@ def print_response(response_it):
 
 def do_loop(system_prompt, model):
     with model.chat_session(
+            system_prompt='Use markdown formatting for all input and output. Do not output JSON or HTML tags.',
             prompt_template='{0}'):
 
         response_it = model.generate(
